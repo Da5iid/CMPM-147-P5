@@ -1,10 +1,7 @@
 /* exported p4_inspirations, p4_initialize, p4_render, p4_mutate */
-let img;
 
 function p4_inspirations() {
-  //img = [loadImage('assets/grassXP.jpg'), loadImage('assets/banana.jpg'), loadImage('assets/slug.jpg')];
-  //console.log(img)
-  //return img[0];
+
 
   return [
     {name:"grassXP" , assetUrl: "./assets/grassXP.jpg"},
@@ -21,11 +18,10 @@ function p4_initialize(inspiration) {
       size: {min: 10, max: 40},
       posX: {min: 0, max: 1},
       posY: {min: 0, max: 1},
-      elipX: {min: 10, max: 50},
-      elipY: {min: 5, max: 25},
-      elipR: {min: 0, max:  10},
-      opacity: {min: 25, max: 180},
-
+      elipX: {min: 10, max: 40},
+      elipY: {min: 10, max: 40},
+      elipR: {min: 0, max:  90},
+      opacity: {min: 20, max: 160},
       iterations: 8
     };
   }
@@ -36,11 +32,10 @@ function p4_initialize(inspiration) {
       size: {min: 5, max: 30},
       posX: {min: 0, max: 1},
       posY: {min: 0, max: 1},
-      elipX: {min: 10, max: 50},
-      elipY: {min: 5, max: 25},
-      elipR: {min: 0, max:  15},
+      elipX: {min: 5, max: 30},
+      elipY: {min: 5, max: 30},
+      elipR: {min: 0, max:  90},
       opacity: {min: 40, max: 180},
-
       iterations: 5
     };
   }
@@ -48,15 +43,14 @@ function p4_initialize(inspiration) {
   if (inspiration.name.indexOf("slug") != -1) {
     return {
       name: "grassXP",
-      size: {min: 10, max: 40},
+      size: {min: 5, max: 30},
       posX: {min: 0, max: 1},
       posY: {min: 0, max: 1},
-      elipX: {min: 10, max: 50},
-      elipY: {min: 5, max: 25},
-      elipR: {min: 0, max:  10},
-      opacity: {min: 25, max: 180},
-
-      iterations: 6
+      elipX: {min: 10, max: 60},
+      elipY: {min: 10, max: 60},
+      elipR: {min: 0, max:  90},
+      opacity: {min: 40, max: 180},
+      iterations: 5
     };
   }
 }
@@ -89,7 +83,7 @@ function p4_render(design, inspiration) {
         pixel_color[3] = random(design.opacity.min, design.opacity.max);
         fill(pixel_color);
 
-        //circle(random(x, x + iw), random(y, y + ih), random(design.size.min, design.size.max));
+        //create ellipse
         ellipse(random(x, x + iw), random(y, y + ih), random(design.size.min, design.size.max), random(design.size.min, design.size.max));
       }
       y += ih;
@@ -99,7 +93,7 @@ function p4_render(design, inspiration) {
   pop();
 }
 
-// Copied from Adam Smith's slides
+// Adam's "mut" function
 function mut(num, min, max, rate) {
   return constrain(randomGaussian(num, (rate * (max - min)) / 20), min, max);
 }
@@ -110,8 +104,7 @@ const MIN_R = {grassXP: 20, banana: 10, slug: 5};
 const MAX_C = {grassXP: 25, banana: 20, slug: 50};
 const MIN_C = {grassXP: 0, banana: 1, slug: 1};
 
-const INIT_INTERVALS = 8;
-
+// Div's "get mut" function
 function gen_mut_param(param, mn, mx, rate) {
   let i = mut(mn, param.min, param.max, rate);
   let j = mut(param.max, param.min, mx, rate);
@@ -122,18 +115,10 @@ function gen_mut_param(param, mn, mx, rate) {
 
 function p4_mutate(design, inspiration, rate) {
 
-  design.size = gen_mut_param(design.size, MIN_R[design.name], MAX_R[design.name], rate);
-  design.opacity = gen_mut_param(design.opacity, 0, 255, rate);
-
-  design.intervals = floor(mut(design.intervals, 2, 20, rate));
-
-  //elipse x/y
   design.posX = gen_mut_param(design.posX, 0, 1, rate);
   design.posY = gen_mut_param(design.posY, 0, 1, rate);
 
-  //elipse hight/width
-  //design.elipX = gen_mut_param(design.elipX, 0, 1, rate);
-  //design.elipY = gen_mut_param(design.elipY, 0, 1, rate);
-
-  design.elipR = gen_mut_param(design.elipR, MIN_C[design.name], MAX_C[design.name], rate);
+  design.size = gen_mut_param(design.size, MIN_R[design.name], MAX_R[design.name], rate);
+  design.opacity = gen_mut_param(design.opacity, 0, 255, rate);
+  design.intervals = floor(mut(design.intervals, 2, 20, rate));
 }
